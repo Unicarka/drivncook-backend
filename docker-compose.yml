@@ -1,0 +1,24 @@
+services:
+  db:
+    image: mongo:latest
+    ports:
+      - 28017:27017
+    volumes:
+      - db_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  app:
+    build: .
+    ports:
+      - 8000:8000
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - MONGO_URI=mongodb://db:27017/parkingApi
+
+volumes:
+  db_data:
