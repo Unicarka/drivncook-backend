@@ -6,7 +6,7 @@ const connectDB = async () => {
   try {
     console.log(`connecting to ${dbConfig.dialect}://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`)
     await mongoose.connect(`${dbConfig.dialect}://${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`, {
-      serverSelectionTimeoutMS: 100,
+      serverSelectionTimeoutMS: 1000,
     });
     console.log('Successfully connected to MongoDB');
   } catch (err) {

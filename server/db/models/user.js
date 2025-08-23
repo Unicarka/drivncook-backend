@@ -9,13 +9,12 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, enum: ['admin', 'user'], default: 'user' },
     isActive: { type: Boolean, default: true },
+    truck: { type: mongoose.Schema.Types.ObjectId, ref: 'Truck', default: null }
 }, {
     timestamps: true
 });
 
 userSchema.methods.comparePassword = async function (password) {
-    console.log('password', password)
-    console.log('this.password', this.password)
     return await bcrypt.compare(password, this.password);
 }
 

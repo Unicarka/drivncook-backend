@@ -1,4 +1,5 @@
 const userService = require('../services/users')
+const { userRegisterSchema } = require('../validators/user')
 
 const userController = {}
 
@@ -30,7 +31,7 @@ userController.updateUser = async (req, res) => {
     if (!email && !password && !name) {
         return res.status(400).json({message: 'Email, password and name are required'});
     }
-    const user = await userService.updateUser(id, {email, password, name})
+    const user = await userService.update(id, {email, password, name})
     if (user) {
         return res.json({message: 'User updated'});
     }
@@ -39,7 +40,7 @@ userController.updateUser = async (req, res) => {
 
 userController.deleteUser = async (req, res) => {
     const id = req.params.id
-    const user = await userService.deleteUser(id)
+    const user = await userService.delete(id)
     if (user) {
         return res.json({message: 'User deleted'});
     }
@@ -59,12 +60,13 @@ userController.findByEmail = async (req, res) => {
 }
 
 userController.register = async (req, res) => {
+    const { error } = userRegisterSchema.validate(req.body)
+    if (error) {
+        return res.status(400).json({message: error.details[0].message});
+    }
     const email = req.body.email
     const password = req.body.password
     const name = req.body.name
-    if (!email || !password || !name) {
-        return res.status(400).json({message: 'Email, password and name are required'});
-    }
     const user = await userService.register({email, password, name})
     if (user) {
         return res.json(user)
@@ -103,7 +105,7 @@ userController.logout = async (req, res) => {
     if (user) {
         return res.json({message: 'Logout successful'});
     }
-    return res.status(400).json({message: 'Logout failed'});
+    return res.status(500).json({message: 'Logout failed'});
 }
 
 module.exports = userController

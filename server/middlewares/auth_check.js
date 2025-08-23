@@ -16,7 +16,14 @@ async function authenticate(req, res, next) {
         return res.status(403).json({ message: 'Invalid or expired token' });
     }
   } catch (err) {
-    return res.status(403).json({ message: 'Invalid or expired token' });
+    if (err.message.includes('invalid signature')) {
+        return res.status(403).json({ message: 'Invalid or expired token' });
+    }
+    if (err.message.includes('expired')) {
+        return res.status(403).json({ message: 'Token expired' });
+    }
+    console.error('Error authenticating user: ', err)
+    return res.status(500).json({ message: 'Internal server error' });
   }
 }
 

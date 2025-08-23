@@ -1,38 +1,60 @@
+const PendingUser = require('../db/models/pendingUser');
 const User = require('../db/models/user');
+const Stripe = require('./stripe')
+const config = require('config');
 
-const user = {};
+const userService = {};
 
-user.getAll = async () => {
+userService.getAll = async () => {
     const users = await User.find();
     return users.map(user => ({id: user._id, email: user.email, name: user.name, role: user.role, isActive: user.isActive, createdAt: user.createdAt, updatedAt: user.updatedAt}));
 }
 
-user.findById = async (id) => {
+userService.findById = async (id) => {
     const user = await User.findById(id);
     return user;
 }
 
-user.findByEmail = async (email) => {
+userService.findByEmail = async (email) => {
     const user = await User.findOne({email: email});
     return user;
 }
 
-user.create = async (user) => {
+userService.create = async (user) => {
     const newUser = await User.create(user);
     return newUser;
 }
 
-user.update = async (id, user) => {
+userService.update = async (id, user) => {
     const updatedUser = await User.findByIdAndUpdate(id, user);
     return updatedUser;
 }
 
-user.delete = async (id) => {
+userService.delete = async (id) => {
     const deletedUser = await User.findByIdAndDelete(id);
     return deletedUser;
 }
 
-user.login = async (email, password) => {
+userService.register = async (user) => {
+    const existingUser = await User.findOne({email: user.email});
+    if (existingUser) {
+        return null;
+    }
+
+    const session = await Stripe.createCheckoutSession(config.get('inscription_fee.amount'), config.get('inscription_fee.product_name'), {purpose: 'register'});
+
+
+    await PendingUser.create({
+        sessionId: session.id,
+        email: user.email,
+        userData: user,
+        status: 'pending'
+    })
+
+    return { checkoutUrl: session.url };
+}
+
+userService.login = async (email, password) => {
     const user = await User.findOne({email: email});
     if (user) {
         const isPasswordValid = await user.comparePassword(password);
@@ -45,7 +67,7 @@ user.login = async (email, password) => {
     return null;
 }
 
-user.refreshToken = async (refreshToken) => {
+userService.refreshToken = async (refreshToken) => {
     const user = await User.findOne({refreshToken: refreshToken});
     if (user) {
         const token = await user.generateToken();
@@ -54,7 +76,7 @@ user.refreshToken = async (refreshToken) => {
     return null;
 }
 
-user.logout = async (refreshToken) => {
+userService.logout = async (refreshToken) => {
     const user = await User.findOne({refreshToken: refreshToken});
     if (user) {
         user.refreshToken = null;
@@ -64,4 +86,4 @@ user.logout = async (refreshToken) => {
     return null;
 }
 
-module.exports = user;
+module.exports = userService;
