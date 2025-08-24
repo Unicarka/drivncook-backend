@@ -42,7 +42,7 @@ const handleBuyAfterPayment = async (sessionId) => {
 }
 
 
-stripeService.createCheckoutSession = async (amount, product_name, metadata) => {
+stripeService.createCheckoutSession = async (amount, product_name, metadata, success_url) => {
     const checkoutSession = await stripe.checkout.sessions.create({
         line_items: [
             {
@@ -57,7 +57,7 @@ stripeService.createCheckoutSession = async (amount, product_name, metadata) => 
             }
         ],
         mode: 'payment',
-        success_url: config.get('stripe.success_url'),
+        success_url: success_url,
         cancel_url: config.get('stripe.cancel_url'),
         metadata: metadata
     })
@@ -82,7 +82,6 @@ stripeService.webhookHandler = async (req, res) => {
     );
 
     if (event.type === 'checkout.session.completed') {
-        console.log('[WEBHOOK] CHECKOUT SESSION , COMPLETED');
         const session = event.data.object;
 
         const paymentIntent = await stripe.paymentIntents.retrieve(

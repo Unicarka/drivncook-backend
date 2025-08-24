@@ -36,7 +36,7 @@ foodService.buyProducts = async (userId, products) => {
             totalPrice += price * product.quantity;
         }
 
-        const session = await Stripe.createCheckoutSession(totalPrice, 'Food delivery', {purpose: 'buy'});
+        const session = await Stripe.createCheckoutSession(totalPrice, 'Food delivery', {purpose: 'buy'}, config.get('stripe.payment_success_url'));
 
         const pendingBuy = new PendingBuy({
             sessionId: session.id,
