@@ -1,19 +1,15 @@
+
+config/
+
 # Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
 # Logs
-logs
 *.log
+logs/
 
 # Runtime data
 pids
@@ -21,30 +17,21 @@ pids
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage directory
 coverage/
-
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-node_modules/
-jspm_packages/
+*.lcov
 
 # Optional npm cache directory
 .npm
 
-# Optional REPL history
-.node_repl_history
-
-# Output of 'npm pack'
-*.tgz
-
-# Yarn Integrity file
-.yarn-integrity
+# Optional eslint cache
+.eslintcache
 
 # dotenv environment variables file
 .env
+.env.test
+.env.local
+.env.production
 
 # IDE files
 .vscode/
@@ -56,13 +43,9 @@ jspm_packages/
 .DS_Store
 .DS_Store?
 ._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+ehthumbs.db
 
-# Docker
-.dockerignore
-
-# Config files with sensitive data
-config/
+# Temporary folders
+tmp/
+temp/

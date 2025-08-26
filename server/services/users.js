@@ -43,6 +43,7 @@ userService.register = async (user) => {
 
     const session = await Stripe.createCheckoutSession(config.get('inscription_fee.amount'), config.get('inscription_fee.product_name'), {purpose: 'register'}, config.get('stripe.register_success_url'));
 
+
     await PendingUser.create({
         sessionId: session.id,
         email: user.email,

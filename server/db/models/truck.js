@@ -84,7 +84,7 @@ truckSchema.methods.addStockByName = async function (name, quantity) {
 }
 
 truckSchema.methods.addStockById = async function (id, quantity) {
-    const name = foodTypes[id - 1];
+    const name = foodTypes[id];
     const stock = this.stock.find(s => s.name === name);
     if (stock) {
         if (stock.quantity + quantity < 0) {

@@ -88,7 +88,7 @@ userController.login = async (req, res) => {
 }
 
 userController.refreshToken = async (req, res) => {
-    const {refreshToken} = req.body.refreshToken
+    const {refreshToken} = req.body
     if (!refreshToken) {
         return res.status(400).json({message: 'Refresh token is required'});
     }
@@ -97,7 +97,7 @@ userController.refreshToken = async (req, res) => {
 }
 
 userController.logout = async (req, res) => {
-    const {refreshToken} = req.body.refreshToken
+    const {refreshToken} = req.body
     if (!refreshToken) {
         return res.status(400).json({message: 'Refresh token is required'});
     }

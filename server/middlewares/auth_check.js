@@ -22,6 +22,9 @@ async function authenticate(req, res, next) {
     if (err.message.includes('expired')) {
         return res.status(403).json({ message: 'Token expired' });
     }
+    if (err.message.includes('jwt malformed')) {
+        return res.status(403).json({ message: 'Invalid token' });
+    }
     console.error('Error authenticating user: ', err)
     return res.status(500).json({ message: 'Internal server error' });
   }
