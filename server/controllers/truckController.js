@@ -3,6 +3,20 @@ const { parkSchema } = require('../validators/truck');
 
 const truckController = {}
 
+truckController.getMyRevenue = async (req, res) => {
+    const truck = await truckService.getByUserId(req.user.id)
+    try {
+        const revenue = await truckService.getMyRevenue(truck)
+        if (revenue) {
+            return res.status(200).json(revenue);
+        }
+        return res.status(404).json({message: "Revenue not found"});
+    } catch (err) {
+        console.error("Error retrieving revenue: ", err.message)
+        return res.status(500).json({message: "Internal server error"});
+    }
+}
+
 truckController.getAllTrucks = async (req, res) => {
     try {
         const trucks = await truckService.getAllTrucks()

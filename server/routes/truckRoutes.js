@@ -7,6 +7,8 @@ router.get('/all', checkIsAdmin, truckController.getAllTrucks)
 
 router.post('/buy', authenticate, truckController.buy)
 
+router.get('/revenue', authenticate, truckController.getMyRevenue)
+
 router.get('/parkings', truckController.getParkings)
 
 router.get('/parkings/:id', truckController.getParkingById)

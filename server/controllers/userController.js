@@ -28,10 +28,17 @@ userController.updateUser = async (req, res) => {
     const email = req.body.email
     const password = req.body.password
     const name = req.body.name
-    if (!email && !password && !name) {
-        return res.status(400).json({message: 'Email, password and name are required'});
+    const role = req.body.role
+    if (!email && !password && !name && !role) {
+        return res.status(400).json({message: 'At least one field (email, password, name, or role) is required'});
     }
-    const user = await userService.update(id, {email, password, name})
+    const updateData = {}
+    if (email) updateData.email = email
+    if (password) updateData.password = password
+    if (name) updateData.name = name
+    if (role) updateData.role = role
+    
+    const user = await userService.update(id, updateData)
     if (user) {
         return res.json({message: 'User updated'});
     }
@@ -88,7 +95,7 @@ userController.login = async (req, res) => {
 }
 
 userController.refreshToken = async (req, res) => {
-    const {refreshToken} = req.body
+    const {refreshToken} = req.body.refreshToken
     if (!refreshToken) {
         return res.status(400).json({message: 'Refresh token is required'});
     }
@@ -97,7 +104,7 @@ userController.refreshToken = async (req, res) => {
 }
 
 userController.logout = async (req, res) => {
-    const {refreshToken} = req.body
+    const {refreshToken} = req.body.refreshToken
     if (!refreshToken) {
         return res.status(400).json({message: 'Refresh token is required'});
     }

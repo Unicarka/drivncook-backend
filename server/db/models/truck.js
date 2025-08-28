@@ -14,7 +14,9 @@ const truckSchema = new mongoose.Schema({
         [{
             name: { type: String, enum: foodTypes, required: true },
             quantity: { type: Number, default: 0, min: 0 },
+            price: { type: Number, default: 10, min: 0 }
         }],
+        // map the name and the price from the foodTypes 
         default: () => foodTypes.map(name => ({ name, quantity: 0 }))
     },
 
@@ -25,6 +27,20 @@ const truckSchema = new mongoose.Schema({
 
 truckSchema.index({ user: 1 });
 truckSchema.index({ user: 1, status: 1 });
+
+truckSchema.methods.sellItem = async function (name, quantity) {
+    const stock = this.stock.find(s => s.name === name);
+    if (stock) {
+        if (stock.quantity - quantity < 0) {
+            throw new Error('Stock quantity cannot be negative');
+        }
+        stock.quantity -= quantity;
+    } else {
+        throw new Error('Stock not found');
+    }
+    this.revenue += quantity * stock.price;
+    await this.save();
+}
 
 truckSchema.methods.park = async function (spot) {
     if (this.spot) {

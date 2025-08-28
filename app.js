@@ -5,6 +5,7 @@ const userRoutes = require('./server/routes/userRoutes')
 const truckRoutes = require('./server/routes/truckRoutes')
 const stripeRoutes = require('./server/routes/stripeRoutes')
 const foodRoutes = require('./server/routes/foodRoutes')
+const initCronJobs = require('./server/jobs/cron/cronJobs')
 
 const connectDB = require('./server/db/client')
 connectDB()
@@ -32,3 +33,5 @@ app.use('/food', foodRoutes)
 app.listen('8000', () => {
     console.log('Server is running on localhost:8000');
 })
+
+initCronJobs();

@@ -9,6 +9,10 @@ truckService.getAllTrucks = async () => {
     return await Truck.find();
 }
 
+truckService.getMyRevenue = async (truck) => {
+    return truck.revenue;
+}
+
 truckService.getByUserId = async (userId) => {
     return await Truck.findOne({user: userId});
 }

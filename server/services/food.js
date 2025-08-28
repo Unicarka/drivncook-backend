@@ -1,6 +1,7 @@
 const config = require('config')
 const PendingBuy = require('../db/models/pendingBuy');
 const Stripe = require('./stripe')
+const Truck = require('./trucks')
 
 const foodService = {};
 
@@ -35,6 +36,7 @@ foodService.buyProducts = async (userId, products) => {
             const price = foodService.getProductById(product.id).price;
             totalPrice += price * product.quantity;
         }
+        totalPrice = Math.round(totalPrice * 0.8);
 
         const session = await Stripe.createCheckoutSession(totalPrice, 'Food delivery', {purpose: 'buy'}, config.get('stripe.payment_success_url'));
 
@@ -54,6 +56,27 @@ foodService.buyProducts = async (userId, products) => {
         console.error('Error buying products', error);
         throw new Error(error.message);
     }
+}
+
+foodService.sellProducts = async () => {
+    const date = new Date().toISOString().slice(0, 10);
+    const trucks = await Truck.getAllTrucks();
+    const truckFound = trucks.filter(truck => truck.status === 'parked' && truck.stock.some(product => product.quantity > 0));
+    if (truckFound.length === 0) {
+        console.log(`[CRON] ${date} No truck found with products`);
+        return;
+    }
+    const randomIndex = Math.floor(Math.random() * truckFound.length);
+    const truck = truckFound[randomIndex];
+    const stock = await truck.getStock();
+    const product = stock.find(product => product.quantity > 0);
+    if (!product) {
+        console.log(`[CRON] ${date} No product found with quantity > 0`);
+        return;
+    }
+    const randomQuantity = Math.floor(Math.random() * (product.quantity - 1)) + 1;
+    await truck.sellItem(product.name, randomQuantity);
+    console.log(`[CRON] ${date} Truck ${truck._id} sold ${randomQuantity} of ${product.name}`);
 }
 
 module.exports = foodService;
